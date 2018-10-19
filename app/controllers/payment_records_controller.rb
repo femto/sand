@@ -4,11 +4,12 @@ class PaymentRecordsController < ApplicationController
   # GET /payment_records
   # GET /payment_records.json
   def index
-    begin
+    if params[:user_name].present?
       @user = User.find_or_create_by(name: params[:user_name])
-    rescue
+    else
       @user = User.find(session[:user_id]) #default using session user
     end
+
     session[:user_id] = @user.id
     #@payment_records = PaymentRecord.all
     @payment_records = @user.payment_records
@@ -41,7 +42,8 @@ class PaymentRecordsController < ApplicationController
 
     respond_to do |format|
       if @payment_record.save
-        format.html { redirect_to @payment_record, notice: 'Payment record was successfully created.' }
+        #format.html { redirect_to @payment_record, notice: 'Payment record was successfully created.' }
+        format.html { redirect_to "/payment_records" }
         format.json { render :show, status: :created, location: @payment_record }
       else
         format.html { render :new }
